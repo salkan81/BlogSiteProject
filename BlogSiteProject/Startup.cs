@@ -1,4 +1,9 @@
-using BlogSiteProject.Models;
+using BLL.Abstract;
+using BLL.Concrete;
+using DAL.Context;
+using DAL.Repository.Abstract;
+using DAL.Repository.Concrete;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -24,8 +29,30 @@ namespace BlogSiteProject
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews();
-            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("BlogSiteConStr")));
+            services.AddControllersWithViews().AddFluentValidation(a=>a.RegisterValidatorsFromAssemblyContaining<Startup>());
+            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("BlogSiteDbConStr")));
+            services.AddSession();
+
+
+            //Repositories
+            services.AddScoped(typeof(IGenericDal<>), typeof(GenericRepository<>));
+            services.AddScoped<IArticleDal, ArticleRepositoryDal>();
+            services.AddScoped<IArticlesAndTopicsDal, ArticlesAndTopicsRepositoryDal>();
+            services.AddScoped<ITopicDal,TopicRepositoryDal>();
+            services.AddScoped<IUserDal,UserRepositoryDal>();
+            services.AddScoped<IUserRegisterDal, UserRegisterRepositoryDal>();
+            services.AddScoped<IUsersAndTopicsDal, UsersAndTopicsRepositoryDal>();
+
+
+            //Services
+            services.AddScoped<IArticleService, ArticleManager>();
+            services.AddScoped<IArticlesAndTopicsService, ArticlesAndTopicsManager>();
+            services.AddScoped<ITopicService, TopicsManager>();
+            services.AddScoped<IUserService, UserManager>();
+            services.AddScoped<IUserRegisterService, UserRegisterManager>();
+            services.AddScoped<IUsersAndTopicsService, UsersAndTopicsManager>();
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -39,6 +66,8 @@ namespace BlogSiteProject
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+            app.UseSession();
+
             app.UseStaticFiles();
 
             app.UseRouting();

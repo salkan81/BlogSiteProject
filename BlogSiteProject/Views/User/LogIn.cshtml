@@ -1,0 +1,29 @@
+﻿@model LogInVM
+@{
+    ViewData["Title"] = "Login";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="d-flex justify-content-center">
+    <div class="col-md-4 text-center">
+        <form class="form-signin" asp-action="LogIn">
+            <img class="mb-4" src="~/images/defaultImage.png" alt="" width="72" height="72">
+            <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+            <div class="form-group">
+                <label asp-for="Email" class="sr-only">Email address</label>
+                <input asp-for="Email" type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
+            </div>
+            <div class="form-group">
+                <label asp-for="Password" class="sr-only">Password</label>
+                <input asp-for="Password" type="password" id="inputPassword" class="form-control" placeholder="Password" required>
+            </div>
+            <input class="btn btn-lg btn-primary btn-block" type="submit" value="Sign in" />
+        </form>
+        @if (TempData["Message"] != null)
+        {
+            <div style="margin-top:10px" class="alert alert-danger" role="alert">
+                @TempData["Message"]
+            </div>
+        }
+    </div>
+</div>
